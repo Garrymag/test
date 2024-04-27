@@ -1,0 +1,7 @@
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\bin\Debug\timcontrol.exe.config
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\bin\Debug\timcontrol.exe
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\bin\Debug\timcontrol.pdb
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\obj\Debug\timcontrol.csproj.AssemblyReference.cache
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\obj\Debug\timcontrol.csproj.CoreCompileInputs.cache
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\obj\Debug\timcontrol.exe
+C:\Users\Romanov\source\repos\timcontrol\timcontrol\obj\Debug\timcontrol.pdb
