@@ -17,6 +17,7 @@ namespace timcontrol
         static void Main(string[] args)
         {
             string[] portNames = SerialPort.GetPortNames();
+            string selectedPort;
 
             if (portNames.Length == 0)
             {
@@ -28,7 +29,7 @@ namespace timcontrol
             if (portNames.Length == 1)
             {
                 Console.WriteLine($"Only one serial port available: {portNames[0]}");
-                InitializePort(portNames[0]);
+                selectedPort = portNames[0];
             }
             else
             {
@@ -47,22 +48,70 @@ namespace timcontrol
                 }
 
                 // Array is zero-based, user input is 1-based.
-                string selectedPort = portNames[portNumber - 1];
-                InitializePort(selectedPort);
+                selectedPort = portNames[portNumber - 1];
+
+            }
+
+
+            using (SerialPort port = new SerialPort(selectedPort))
+            {
+                Console.WriteLine($"Initializing port: {selectedPort}");
+                port.BaudRate = 9600; // Установите скорость порта, соответствующую настройкам STM32
+                port.DataBits = 8;
+                port.Parity = Parity.None;
+                port.StopBits = StopBits.One;
+                port.Open();
+
+                Console.WriteLine($"Speed: {port.BaudRate}");
+                Console.WriteLine($"DataBits: {port.DataBits}");
+                Console.WriteLine($"Parity: {port.Parity}");
+                Console.WriteLine($"StopBits: {port.StopBits}");
+
+                while (true)
+                {
+                    Console.WriteLine("Введите команду и параметры:");
+                    string command = Console.ReadLine();
+
+                    // Здесь можно обработать команду, чтобы проверить количество параметров
+                    // и соответственно принять решение о дальнейших действиях
+                    // Пример: Если команда "cmd1 123", распарсить и отправить
+                    string[] parts = command.Split(' ');
+
+                    switch (parts[0])
+                    {
+                        case "exit":
+                            port.Close();
+                            return;
+
+                        case "freq":
+                            { } break;
+                        case "del1":
+                            { } break;
+                        case "dur1":
+                            { } break;
+                        case "del2":
+                            { } break;
+                        case "dur2":
+                            { } break;
+                        default:
+                            { } break;
+
+                    }
+
+                    // Вам нужно будет реализовать логику проверки
+                    // и форматирования команд здесь, в зависимости от протокола обмена с STM32
+
+                    port.WriteLine(command); // Отправляем всю строку команды
+
+                    // Для приема ответа (если необходимо), раскомментируйте следующие строки:
+                    //string response = port.ReadLine();
+                    //Console.WriteLine($"Ответ от STM32: {response}");
+                }
+
+
             }
         }
 
-        static void InitializePort(string portName)
-        {
-            // Here you would initialize your serial port and start communication
-            // As an example, just printing the selected port
-            Console.WriteLine($"Initializing port: {portName}");
-            // More serial port initialization code would go here...
-
-            // Keep the console window open
-            Console.WriteLine("Press Enter to exit.");
-            Console.ReadLine();
-        }
     }
     
 }
