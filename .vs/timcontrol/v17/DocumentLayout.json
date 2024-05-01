@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Romanov\\Documents\\GitHub\\test\\",
+  "WorkspaceRootPath": "C:\\Users\\Romanov\\source\\repos\\test\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{175DD637-2BBA-43D3-A770-FA0F497FF920}|timcontrol\\timcontrol.csproj|c:\\users\\romanov\\documents\\github\\test\\timcontrol\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{175DD637-2BBA-43D3-A770-FA0F497FF920}|timcontrol\\timcontrol.csproj|c:\\users\\romanov\\source\\repos\\test\\timcontrol\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{175DD637-2BBA-43D3-A770-FA0F497FF920}|timcontrol\\timcontrol.csproj|solutionrelative:timcontrol\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -24,11 +24,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Romanov\\Documents\\GitHub\\test\\timcontrol\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Romanov\\source\\repos\\test\\timcontrol\\Program.cs",
               "RelativeDocumentMoniker": "timcontrol\\Program.cs",
-              "ToolTip": "C:\\Users\\Romanov\\Documents\\GitHub\\test\\timcontrol\\Program.cs",
+              "ToolTip": "C:\\Users\\Romanov\\source\\repos\\test\\timcontrol\\Program.cs",
               "RelativeToolTip": "timcontrol\\Program.cs",
-              "ViewState": "AQIAAAwAAAAAAAAAAAAAAFUAAAAkAAAA",
+              "ViewState": "AQIAAF4AAAAAAAAAAAAAAGUAAAAqAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-26T17:33:06.262Z",
               "EditorCaption": ""

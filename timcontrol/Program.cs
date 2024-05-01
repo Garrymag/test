@@ -1,118 +1,133 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.IO.Ports;
+using System.Threading;
 
-
-
-
-
-namespace timcontrol
+namespace timontrol
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
-            string[] portNames = SerialPort.GetPortNames();
-            string selectedPort;
+            // Получаем список доступных COM-портов
+            string[] ports = SerialPort.GetPortNames();
+            SerialPort serialPort = new SerialPort();
 
-            if (portNames.Length == 0)
+            // Проверяем наличие COM-портов
+            if (ports.Length == 0)
             {
-                Console.WriteLine("No serial ports found. Press Enter to exit.");
-                Console.ReadLine();
+                Console.WriteLine("COM-порты не найдены!");
                 return;
             }
 
-            if (portNames.Length == 1)
+            // Выводим список доступных портов
+            for (int i = 0; i < ports.Length; i++)
             {
-                Console.WriteLine($"Only one serial port available: {portNames[0]}");
-                selectedPort = portNames[0];
+                Console.WriteLine($"{i + 1}. {ports[i]}");
             }
+
+            // Если доступен только один порт, выбираем его автоматически
+            if (ports.Length == 1)
+            {
+                Console.WriteLine($"Выбран {ports[0]}");
+                serialPort.PortName = ports[0];
+            }
+            // Иначе просим пользователя выбрать порт
             else
             {
-                Console.WriteLine("Available serial ports:");
-                for (int i = 0; i < portNames.Length; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {portNames[i]}");
-                }
-
-                Console.WriteLine("Enter the port number you want to use:");
-
-                int portNumber;
-                while (!int.TryParse(Console.ReadLine(), out portNumber) || portNumber <= 0 || portNumber > portNames.Length)
-                {
-                    Console.WriteLine("Invalid port number, try again:");
-                }
-
-                // Array is zero-based, user input is 1-based.
-                selectedPort = portNames[portNumber - 1];
-
+                Console.Write("Введите номер COM-порта: ");
+                int portNumber = Convert.ToInt32(Console.ReadLine()) - 1;
+                serialPort.PortName = ports[portNumber];
             }
 
+            // Устанавливаем параметры для последовательного порта
+            serialPort.BaudRate = 9600;
+            serialPort.Open();
 
-            using (SerialPort port = new SerialPort(selectedPort))
+            // Инструкция для пользователя
+            Console.WriteLine("Введите 'f' и частота (64, 128, 256)  или 'q' для выхода.");
+
+            while (true)
             {
-                Console.WriteLine($"Initializing port: {selectedPort}");
-                port.BaudRate = 9600; // Установите скорость порта, соответствующую настройкам STM32
-                port.DataBits = 8;
-                port.Parity = Parity.None;
-                port.StopBits = StopBits.One;
-                port.Open();
+                // Читаем команду от пользователя
+                string[] parts = Console.ReadLine().Split(' ');
+                string cmd = parts[0].ToLower();
 
-                Console.WriteLine($"Speed: {port.BaudRate}");
-                Console.WriteLine($"DataBits: {port.DataBits}");
-                Console.WriteLine($"Parity: {port.Parity}");
-                Console.WriteLine($"StopBits: {port.StopBits}");
-
-                while (true)
+                // Выход из программы, если пользователь ввел 'q'
+                if (cmd == "q")
                 {
-                    Console.WriteLine("Введите команду и параметры:");
-                    string command = Console.ReadLine();
+                    break;
+                }
 
-                    // Здесь можно обработать команду, чтобы проверить количество параметров
-                    // и соответственно принять решение о дальнейших действиях
-                    // Пример: Если команда "cmd1 123", распарсить и отправить
-                    string[] parts = command.Split(' ');
+                // Обработка команды установки частоты ШИМ
+                if (cmd == "f" && parts.Length > 1)
+                {
+                    byte frequencyValue = 0;
+                    bool validFrequency = false;
 
-                    switch (parts[0])
+                    // Определяем однобайтовую команду, соответствующую запрошенной частоте
+                    switch (parts[1])
                     {
-                        case "exit":
-                            port.Close();
-                            return;
-
-                        case "freq":
-                            { } break;
-                        case "del1":
-                            { } break;
-                        case "dur1":
-                            { } break;
-                        case "del2":
-                            { } break;
-                        case "dur2":
-                            { } break;
-                        default:
-                            { } break;
-
+                        case "64":
+                            frequencyValue = 1; // 64кГц
+                            validFrequency = true;
+                            break;
+                        case "128":
+                            frequencyValue = 2; // 128кГц
+                            validFrequency = true;
+                            break;
+                        case "256":
+                            frequencyValue = 3; // 256кГц
+                            validFrequency = true;
+                            break;
                     }
 
-                    // Вам нужно будет реализовать логику проверки
-                    // и форматирования команд здесь, в зависимости от протокола обмена с STM32
+                    // Отправляем команду, если частота валидна
+                    if (validFrequency)
+                    {
+                        serialPort.Write(new byte[] { frequencyValue }, 0, 1);
+                        Console.WriteLine($"Команда установки частоты отправлена. Ожидаем эхо...");
 
-                    port.WriteLine(command); // Отправляем всю строку команды
+                        // Ожидаем эхо-ответа в течение 2 секунд
+                        var echoReceived = false;
+                        var timeout = DateTime.Now.AddSeconds(2);
+                        while (DateTime.Now < timeout)
+                        {
+                            if (serialPort.BytesToRead > 0)
+                            {
+                                byte echo = (byte)serialPort.ReadByte();
+                                if (echo == frequencyValue)
+                                {
+                                    echoReceived = true;
+                                    Console.WriteLine("Ok");
+                                    break;
+                                }
+                            }
+                            // Задержка для предотвращения чрезмерной нагрузки
+                            Thread.Sleep(50);
+                        }
 
-                    // Для приема ответа (если необходимо), раскомментируйте следующие строки:
-                    //string response = port.ReadLine();
-                    //Console.WriteLine($"Ответ от STM32: {response}");
+                        if (!echoReceived)
+                        {
+                            Console.WriteLine("Error: Нет эхо-ответа или ответ некорректен.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Неверное значение частоты. Введите 64, 128 или 256.");
+                    }
                 }
-
-
+                else
+                {
+                    Console.WriteLine("Неверная команда.");
+                }
             }
+
+            if (serialPort.IsOpen)
+            {
+                serialPort.Close();
+            }
+
+            Console.WriteLine("Программа завершена.");
         }
-
     }
-    
 }
-
